@@ -9,5 +9,6 @@ import { SubscriptionController } from './subscriptions.controller';
   imports: [RssModule, MongooseModule.forFeature([{ name: 'Subscription', schema: SubscriptionSchema }])],
   controllers: [SubscriptionController],
   providers: [SubscriptionService],
+  exports: [SubscriptionService],
 })
 export class SubscriptionModule {}

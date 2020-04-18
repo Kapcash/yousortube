@@ -27,7 +27,6 @@ export class SubscriptionGroupController {
    * @param channelIds The channels ids to include in the group
    */
   @Post()
-  // TODO refacto into a DTO object
   createSubscriptionGroup(@Body() dto: CreateSubGroupDto): Promise<SubscriptionGroup> {
     return this.subscriptionGroupService.createSubscriptionGroup(dto.groupTitle, dto.channelIds);
   }
@@ -55,6 +54,6 @@ export class SubscriptionGroupController {
   @Get('/:id/videos')
   @HttpCode(501)
   async getVideos(@Param('id') groupId: string): Promise<Video[]> {
-    return [];
+    return this.subscriptionGroupService.getGroupVideos(groupId);
   }
 }
