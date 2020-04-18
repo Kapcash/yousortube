@@ -27,8 +27,11 @@ export class SubscriptionGroupService {
     return createdSubGrp.save();
   }
 
-  deleteSubscriptionGroup(groupId: string): Promise<Deletion> {
-    return this.subscriptionGroupModel.deleteOne({ _id: groupId }).exec();
+  async deleteSubscriptionGroup(groupId: string): Promise<void> {
+    const deletion: Deletion = await this.subscriptionGroupModel.deleteOne({ _id: groupId }).exec();
+    if (deletion.deletedCount !== 1) {
+      throw new Error('Group id has not been deleted correctly');
+    }
   }
 
   editSubscriptionGroup(groupId: string, jsonpatchDto: any): Promise<any>{

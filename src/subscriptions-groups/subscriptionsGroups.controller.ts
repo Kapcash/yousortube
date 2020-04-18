@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, Post, Delete, Patch, Param, Body } from '@nestjs/common';
+import { Controller, Get, HttpCode, Post, Delete, Patch, Param, Body, HttpStatus, HttpException } from '@nestjs/common';
 import { SubscriptionGroup, Video, CreateSubGroupDto } from './subscriptionGroups.interface';
 import { SubscriptionGroupService } from './subscriptionGroups.service';
 
@@ -37,9 +37,12 @@ export class SubscriptionGroupController {
    * @param groupId The subscription group id to remove
    */
   @Delete(':id')
-  @HttpCode(501)
-  async removeSubscriptionGroup(@Param('id') groupId: string): Promise<SubscriptionGroup> {
-    return null;
+  async removeSubscriptionGroup(@Param('id') groupId: string): Promise<void> {
+    try {
+      await this.subscriptionGroupService.deleteSubscriptionGroup(groupId);
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Patch(':id')
