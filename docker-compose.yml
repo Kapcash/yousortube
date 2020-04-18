@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  db:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - $HOME/mongo_data:/data/db
+
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile.web
+    command: bash -c "yarn build && yarn start:prod"
+    stdin_open: true
+    # Allows us to send signals (CTRL+C, CTRL+P + CTRL+Q) into the container:
+    tty: true
+    volumes:
+      - type: bind
+        source: .
+        target: /yousortube
+        consistency: consistent
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      HOST_DB: "db"
