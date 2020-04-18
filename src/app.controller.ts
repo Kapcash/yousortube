@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { RssService, Subscription } from './rss/rss.service';
+import { RssService, OpmlSubscription } from './rss/rss.service';
 import { OpmlService } from './rss/opml.service';
 
 @Controller()
@@ -10,7 +10,7 @@ export class AppController {
   ) {}
 
   @Get()
-  async init(): Promise<Subscription[]> {
+  async init(): Promise<OpmlSubscription[]> {
     const opmlFile = await this.opmlService.getOpmlFile();
     return await this.rssService.parseOpml(opmlFile);
     // return await this.rssService.fetchRss(subs[0].xmlUrl);

@@ -1,25 +1,24 @@
-import { Controller, Get, HttpCode, Post, Delete, Patch, Param } from '@nestjs/common';
-import { SubscriptionGroup, Video } from './subscriptionGroups.interface';
-import { RssService } from 'src/rss/rss.service';
-import { OpmlService } from 'src/rss/opml.service';
+import { Controller, Get, HttpCode, Post, Delete, Patch, Param, Body } from '@nestjs/common';
+import { SubscriptionGroup, Video, CreateSubGroupDto } from './subscriptionGroups.interface';
+import { SubscriptionGroupService } from './subscriptionGroups.service';
 
 @Controller('subscription-groups')
 export class SubscriptionGroupController {
+
   constructor(
-    private readonly rssService: RssService,
-    private readonly opmlService: OpmlService,
-  ) {}
+    private readonly subscriptionGroupService: SubscriptionGroupService,
+  ) {
+    
+  }
 
   @Get()
-  @HttpCode(501)
   async getSubscriptionGroups(): Promise<SubscriptionGroup[]> {
-    return [];
+    return this.subscriptionGroupService.findAll();
   }
 
   @Get(':id')
-  @HttpCode(501)
-  async getSubscriptionGroup(@Param('id') groupId: string): Promise<SubscriptionGroup[]> {
-    return [];
+  async getSubscriptionGroup(@Param('id') groupId: string): Promise<SubscriptionGroup> {
+    return this.subscriptionGroupService.findOne(groupId);
   }
 
   /**
@@ -28,10 +27,9 @@ export class SubscriptionGroupController {
    * @param channelIds The channels ids to include in the group
    */
   @Post()
-  @HttpCode(501)
   // TODO refacto into a DTO object
-  async createSubscriptionGroup(groupTitle: string, channelIds?: string[]): Promise<SubscriptionGroup> {
-    return null;
+  createSubscriptionGroup(@Body() dto: CreateSubGroupDto): Promise<SubscriptionGroup> {
+    return this.subscriptionGroupService.createSubscriptionGroup(dto.groupTitle, dto.channelIds);
   }
 
   /**

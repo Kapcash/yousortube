@@ -1,19 +1,28 @@
-import { Document, Schema } from 'mongoose';
+import { Document, Schema, Types } from 'mongoose';
 
 // === SubscriptionGroup === //
 
 export interface SubscriptionGroup {
-  readonly channels: string[];
   readonly title: string;
+  readonly channels: Types.ObjectId[];
+  readonly creationDate?: Date;
 }
 
 export interface SubscriptionGroupDoc extends SubscriptionGroup, Document {}
 
 export const SubscriptionGroupSchema = new Schema({
-  channels: [Schema.Types.ObjectId],
   title: { type: String, default: 'New group'},
+  channels: {
+    type: [Schema.Types.ObjectId],
+    ref: 'Subscription'
+  },
   creationDate: { type: Date, default: Date.now },
 });
+
+export interface CreateSubGroupDto {
+  groupTitle: string,
+  channelIds?: string[]
+}
 
 // === Video === //
 

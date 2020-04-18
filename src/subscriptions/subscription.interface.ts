@@ -4,15 +4,14 @@ import { Document, Schema } from 'mongoose';
 
 export interface Subscription {
   readonly name: string;
-  readonly url: string;
+  readonly rssUrl: string;
 }
 
-export interface SubscriptionDoc extends Subscription, Document {
-}
+export interface SubscriptionDoc extends Subscription, Document {}
 
 export const SubscriptionSchema = new Schema({
-  channel: String,
-  author: String,
+  name: String,
+  rssUrl: String,
 });
 
 // === Video === //
