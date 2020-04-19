@@ -12,12 +12,20 @@ export class SubscriptionService {
     private readonly rssService: RssService,
   ) {}
 
-  // TODO: Avoid creation if the subscription channel already exists
-  // Those objects will be shared across all users
-  createSubscription(sub: Subscription | OpmlSubscription): Promise<SubscriptionDoc> {
-    const subDoc = (sub as OpmlSubscription).type ? this.fromOpmlToSub(sub as OpmlSubscription) : sub;
-    const createdSub = new this.subscriptionModel(subDoc);
-    return createdSub.save();
+  async createSubscription(sub: Subscription | OpmlSubscription): Promise<SubscriptionDoc> {
+    const subDoc: Subscription = (sub as OpmlSubscription).type ? this.fromOpmlToSub(sub as OpmlSubscription) : sub as Subscription;
+    let subSaved: SubscriptionDoc;
+    try {
+      subSaved = await this.subscriptionModel.create(subDoc)
+    } catch (err) {
+      // Duplicate key on channelId
+      if (err.code === 11000 && err.keyPattern.channelId === 1) {
+        subSaved = await this.subscriptionModel.findOne({ rssUrl: subDoc.rssUrl }).exec();
+      } else {
+        throw err;
+      }
+    }
+    return subSaved;
   }
 
   async findOne(id): Promise<SubscriptionDoc> {
