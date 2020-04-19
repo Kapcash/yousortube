@@ -1,5 +1,5 @@
 import { Controller, Get, HttpCode, Post, Delete, Patch, Param, Body, HttpStatus, HttpException } from '@nestjs/common';
-import { SubscriptionGroup, Video, CreateSubGroupDto } from './subscriptionGroups.interface';
+import { SubscriptionGroup, CreateSubGroupDto, VideoDto } from './subscriptionGroups.interface';
 import { SubscriptionGroupService } from './subscriptionGroups.service';
 
 @Controller('subscription-groups')
@@ -53,7 +53,7 @@ export class SubscriptionGroupController {
 
   @Get('/:id/videos')
   @HttpCode(501)
-  async getVideos(@Param('id') groupId: string): Promise<Video[]> {
+  async getVideos(@Param('id') groupId: string): Promise<VideoDto[]> {
     return this.subscriptionGroupService.getGroupVideos(groupId);
   }
 }

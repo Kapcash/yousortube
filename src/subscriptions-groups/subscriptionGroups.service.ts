@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { SubscriptionGroup, SubscriptionGroupDoc, Video } from './subscriptionGroups.interface';
+import { SubscriptionGroup, SubscriptionGroupDoc, VideoDto } from './subscriptionGroups.interface';
 import { SubscriptionService } from 'src/subscriptions/subscription.service';
 import { Subscription } from 'src/subscriptions/subscription.interface';
+import { YoutubeApiService } from 'src/youtube-api/youtubeApi.service';
 
 type Deletion = { ok?: number; n?: number; } & { deletedCount?: number };
 
@@ -13,6 +14,7 @@ export class SubscriptionGroupService {
   constructor(
     @InjectModel('SubscriptionGroup') private subscriptionGroupModel: Model<SubscriptionGroupDoc>,
     private readonly subscriptionService: SubscriptionService,
+    private readonly youtubeApiService: YoutubeApiService,
   ) {}
 
   findAll(): Promise<SubscriptionGroup[]> {
@@ -43,8 +45,10 @@ export class SubscriptionGroupService {
     return null;
   }
 
-  async getGroupVideos(groupId: string): Promise<Video[]> {
+  async getGroupVideos(groupId: string): Promise<VideoDto[]> {
     const subGroup = await this.findOne(groupId);
-    return this.subscriptionService.getSubsVideos(subGroup.channels as Subscription[])
+    const rssVideos = await this.subscriptionService.getSubsVideos(subGroup.channels as Subscription[])
+    const videoInfos = await this.youtubeApiService.getVideosInfo(rssVideos.map(video => video.id));
+    return videoInfos.map(vid => this.youtubeApiService.fromFullVideoToDto(vid));
   }
 }

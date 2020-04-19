@@ -27,11 +27,11 @@ export interface CreateSubGroupDto {
 
 // === Video === //
 
-export interface Video {
+export interface VideoDto {
   id: string;
-  isoDate: string;
-  pubDate: string;
+  pubDate: Date;
   title: string;
   link: string;
   author: string;
+  thumbnailUrl: string;
 }

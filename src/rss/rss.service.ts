@@ -26,8 +26,6 @@ export class RssService {
   /** Fetch an RSS feed */
   public async fetchRss(rssUrl: string): Promise<Parser.Item[]> {
     const feed: Parser.Output = await new Parser().parseURL(rssUrl);
-    console.log(feed.title);
-
     return feed.items;
   }
 }
