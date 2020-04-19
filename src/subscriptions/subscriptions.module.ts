@@ -11,4 +11,4 @@ import { SubscriptionController } from './subscriptions.controller';
   providers: [SubscriptionService],
   exports: [SubscriptionService],
 })
-export class SubscriptionModule {}
+export class SubscriptionsModule {}

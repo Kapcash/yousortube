@@ -1,12 +1,12 @@
 import { Controller, Get, HttpCode, Post, Delete, Patch, Param, Body, HttpStatus, HttpException } from '@nestjs/common';
 import { SubscriptionGroup, CreateSubGroupDto, VideoDto } from './subscriptionGroups.interface';
-import { SubscriptionGroupService } from './subscriptionGroups.service';
+import { SubscriptionGroupsService } from './subscriptionGroups.service';
 
 @Controller('subscription-groups')
 export class SubscriptionGroupController {
 
   constructor(
-    private readonly subscriptionGroupService: SubscriptionGroupService,
+    private readonly subscriptionGroupService: SubscriptionGroupsService,
   ) {
     
   }
@@ -28,7 +28,8 @@ export class SubscriptionGroupController {
    */
   @Post()
   createSubscriptionGroup(@Body() dto: CreateSubGroupDto): Promise<SubscriptionGroup> {
-    return this.subscriptionGroupService.createSubscriptionGroup(dto.groupTitle, dto.channelIds);
+    const userId = '1';
+    return this.subscriptionGroupService.createSubscriptionGroup(userId, dto.groupTitle, dto.channelIds);
   }
 
   /**

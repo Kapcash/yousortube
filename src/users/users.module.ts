@@ -2,10 +2,15 @@ import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { RssModule } from 'src/rss/rss.module';
+import { UserSchema } from './users.interface';
+import { MongooseModule } from '@nestjs/mongoose';
+import { SubscriptionGroupsModule } from 'src/subscriptions-groups/subscriptionGroups.module';
+import { SubscriptionsModule } from 'src/subscriptions/subscriptions.module';
 
 @Module({
-  imports: [RssModule],
+  imports: [RssModule, SubscriptionsModule, SubscriptionGroupsModule, MongooseModule.forFeature([{ name: 'Users', schema: UserSchema }])],
   controllers: [UsersController],
-  providers: [UsersService]
+  providers: [UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {}

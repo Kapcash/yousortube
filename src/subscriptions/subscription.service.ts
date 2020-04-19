@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { SubscriptionDoc, Subscription, Video } from './subscription.interface';
 import { RssService, OpmlSubscription } from 'src/rss/rss.service';
 
@@ -12,7 +12,9 @@ export class SubscriptionService {
     private readonly rssService: RssService,
   ) {}
 
-  createSubscription(sub: Subscription | OpmlSubscription) {
+  // TODO: Avoid creation if the subscription channel already exists
+  // Those objects will be shared across all users
+  createSubscription(sub: Subscription | OpmlSubscription): Promise<SubscriptionDoc> {
     const subDoc = (sub as OpmlSubscription).type ? this.fromOpmlToSub(sub as OpmlSubscription) : sub;
     const createdSub = new this.subscriptionModel(subDoc);
     return createdSub.save();

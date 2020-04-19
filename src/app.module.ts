@@ -3,8 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { RssModule } from './rss/rss.module';
-import { SubscriptionModule } from './subscriptions/subscriptions.module';
-import { SubscriptionGroupModule } from './subscriptions-groups/subscriptionGroups.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { SubscriptionGroupsModule } from './subscriptions-groups/subscriptionGroups.module';
 import { YoutubeApiModule } from './youtube-api/youtupeApi.module';
 import { AxiosRequestConfig } from 'axios';
 import { UsersModule } from './users/users.module';
@@ -12,8 +12,8 @@ import { UsersModule } from './users/users.module';
 @Module({
   imports: [
     RssModule,
-    SubscriptionModule,
-    SubscriptionGroupModule,
+    SubscriptionsModule,
+    SubscriptionGroupsModule,
     YoutubeApiModule,
     HttpModule,
     ConfigModule.forRoot(),

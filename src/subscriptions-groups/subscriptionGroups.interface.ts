@@ -4,6 +4,7 @@ import { Subscription } from 'src/subscriptions/subscription.interface';
 // === SubscriptionGroup === //
 
 export interface SubscriptionGroup {
+  readonly userId: Types.ObjectId;
   readonly title: string;
   readonly channels: Types.ObjectId[] | Subscription[];
   readonly creationDate?: Date;
@@ -12,6 +13,7 @@ export interface SubscriptionGroup {
 export interface SubscriptionGroupDoc extends SubscriptionGroup, Document {}
 
 export const SubscriptionGroupSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: 'User'},
   title: { type: String, default: 'New group'},
   channels: [{
     type: Schema.Types.ObjectId,

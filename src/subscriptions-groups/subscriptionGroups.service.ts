@@ -9,7 +9,7 @@ import { YoutubeApiService } from 'src/youtube-api/youtubeApi.service';
 type Deletion = { ok?: number; n?: number; } & { deletedCount?: number };
 
 @Injectable()
-export class SubscriptionGroupService {
+export class SubscriptionGroupsService {
 
   constructor(
     @InjectModel('SubscriptionGroup') private subscriptionGroupModel: Model<SubscriptionGroupDoc>,
@@ -25,8 +25,9 @@ export class SubscriptionGroupService {
     return this.subscriptionGroupModel.findOne({ _id: groupId }).populate('channels').exec();
   }
 
-  createSubscriptionGroup(title: string, channelIds: string[]): Promise<SubscriptionGroup> {
+  createSubscriptionGroup(userId: string, title: string, channelIds: string[]): Promise<SubscriptionGroup> {
     const sub: SubscriptionGroup = {
+      userId: Types.ObjectId(userId),
       title,
       channels: channelIds.map(id => Types.ObjectId(id))
     };
