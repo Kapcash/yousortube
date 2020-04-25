@@ -22,6 +22,8 @@ export const SubscriptionGroupSchema = new Schema({
   creationDate: { type: Date, default: Date.now },
 });
 
+SubscriptionGroupSchema.index({ userId: 1, title: 1}, { unique: true });
+
 export interface CreateSubGroupDto {
   groupTitle: string,
   channelIds?: string[]

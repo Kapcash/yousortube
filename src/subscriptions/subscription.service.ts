@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SubscriptionDoc, Subscription, Video } from './subscription.interface';
@@ -22,7 +22,7 @@ export class SubscriptionService {
       if (err.code === 11000 && err.keyPattern.channelId === 1) {
         subSaved = await this.subscriptionModel.findOne({ rssUrl: subDoc.rssUrl }).exec();
       } else {
-        throw err;
+        throw new InternalServerErrorException('An error happened when creating the subscription');
       }
     }
     return subSaved;

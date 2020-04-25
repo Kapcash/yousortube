@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDoc } from './users.interface';
@@ -39,8 +39,10 @@ export class UsersService {
       });
       return this.findOneById(createdUser.id);
     } catch (err) {
-      // TODO Handle username already exists
-      console.error(err);
+      if (err.code === 11000) { // Duplicate login
+        throw new BadRequestException('This login is already taken.');
+      }
+      throw new InternalServerErrorException('An error happened when creating the user.');
     }
   }
 }

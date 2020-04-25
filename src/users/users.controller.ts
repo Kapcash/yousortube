@@ -7,6 +7,7 @@ import { SubscriptionService } from 'src/subscriptions/subscription.service';
 import { SubscriptionGroupsService } from 'src/subscriptions-groups/subscriptionGroups.service';
 import { SubscriptionDoc } from 'src/subscriptions/subscription.interface';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { hash } from 'bcrypt';
 
 /** Validator function for opml upload file */
 const validateOpmlFile = (req, file, cb) => {
@@ -32,7 +33,8 @@ export class UsersController {
 
   @Post()
   async createAccount(@Body() body) {
-    return this.usersService.createNewUser(body.username, body.password);
+    const passwordHash = await hash(body.password, 12)
+    return this.usersService.createNewUser(body.username, passwordHash);
   }
 
   @Delete()
