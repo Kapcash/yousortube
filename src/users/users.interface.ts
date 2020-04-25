@@ -9,14 +9,22 @@ export interface FileUploaded {
   size: number;
 }
 
-export interface User {
+export interface UserAttr {
+  readonly login: string;
+  readonly password?: string;
   readonly subscriptions: Types.ObjectId[];
   readonly creationDate?: Date;
 }
 
-export interface UserDoc extends User, Document {}
+export interface User extends UserAttr {
+  _id: string;
+}
+
+export interface UserDoc extends UserAttr, Document {}
 
 export const UserSchema = new Schema({
+  login: { type: String, required: true },
+  password: { type: String, required: true },
   creationDate: { type: Date, default: Date.now },
   subscriptions: { type: [Schema.Types.ObjectId], default: [] },
 });

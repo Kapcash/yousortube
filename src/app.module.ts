@@ -8,17 +8,20 @@ import { SubscriptionGroupsModule } from './subscriptions-groups/subscriptionGro
 import { YoutubeApiModule } from './youtube-api/youtupeApi.module';
 import { AxiosRequestConfig } from 'axios';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './users/auth/auth.module';
 
 @Module({
   imports: [
+    HttpModule,
+    ConfigModule.forRoot(),
+    MongooseModule.forRoot('mongodb://localhost/yousortube'),
+    AuthModule,
+    UsersModule,
     RssModule,
     SubscriptionsModule,
     SubscriptionGroupsModule,
     YoutubeApiModule,
-    HttpModule,
-    ConfigModule.forRoot(),
-    MongooseModule.forRoot('mongodb://localhost/yousortube'),
-    UsersModule],
+  ],
   controllers: [AppController],
   providers: [],
 })

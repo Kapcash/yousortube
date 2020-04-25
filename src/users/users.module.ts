@@ -8,7 +8,11 @@ import { SubscriptionGroupsModule } from 'src/subscriptions-groups/subscriptionG
 import { SubscriptionsModule } from 'src/subscriptions/subscriptions.module';
 
 @Module({
-  imports: [RssModule, SubscriptionsModule, SubscriptionGroupsModule, MongooseModule.forFeature([{ name: 'Users', schema: UserSchema }])],
+  imports: [
+    RssModule,
+    SubscriptionsModule,
+    SubscriptionGroupsModule,
+    MongooseModule.forFeature([{ name: 'Users', schema: UserSchema }])],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],
