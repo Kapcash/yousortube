@@ -15,10 +15,6 @@ export interface UserAttr {
   readonly creationDate?: Date;
 }
 
-export interface User extends UserAttr {
-  id: string;
-}
-
 export interface UserDoc extends UserAttr, Document {}
 
 export const UserSchema = new Schema<UserAttr>({

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserDoc, User } from './users.interface';
+import { UserDoc } from './users.interface';
 
 @Injectable()
 export class UsersService {
@@ -10,21 +10,16 @@ export class UsersService {
     @InjectModel('Users') private userModel: Model<UserDoc>
   ){}
     
-  findOne(username: string): Promise<User> {
-    return this.userModel.findOne({ login: username }).exec()
-      .then(user => this.getUserObject(user, false))
+  findOne(username: string, withPassword = false): Promise<UserDoc> {
+    let query = this.userModel.findOne({ login: username })
+    if (!withPassword) {
+      query = query.select('-password');
+    }
+    return query.exec();
   }
 
-  findOneById(userId: string): Promise<User> {
-    return this.userModel.findOne({ _id: userId }).exec()
-      .then(user => this.getUserObject(user, false))
-  }
-
-  /** Return the user object simplified, and without the password */
-  getUserObject(user: UserDoc, hidePassword = true): User {
-    const userObj = user.toObject();
-    const { password, ...rest } = userObj;
-    return hidePassword ? rest : userObj;
+  findOneById(userId: string): Promise<UserDoc> {
+    return this.userModel.findOne({ _id: userId }).select('-password').exec()
   }
 
   async deleteUser(userId: string): Promise<void> {
@@ -36,12 +31,13 @@ export class UsersService {
     return this.userModel.create({});
   }
 
-  createNewUser(username: string, password: string): Promise<UserDoc> {
+  async createNewUser(username: string, password: string): Promise<UserDoc> {
     try {
-      return this.userModel.create({
+      const createdUser = await this.userModel.create({
         login: username,
         password
       });
+      return this.findOneById(createdUser.id);
     } catch (err) {
       // TODO Handle username already exists
       console.error(err);

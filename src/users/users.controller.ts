@@ -1,7 +1,7 @@
 import { Controller, Post, UseInterceptors, UploadedFile, Request, UseGuards, Get, Body, Req, Param, Delete } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RssService } from 'src/rss/rss.service';
-import { FileUploaded, User } from './users.interface';
+import { FileUploaded, UserDoc } from './users.interface';
 import { UsersService } from './users.service';
 import { SubscriptionService } from 'src/subscriptions/subscription.service';
 import { SubscriptionGroupsService } from 'src/subscriptions-groups/subscriptionGroups.service';
@@ -32,7 +32,7 @@ export class UsersController {
 
   @Post()
   async createAccount(@Body() body) {
-    return this.usersService.getUserObject(await this.usersService.createNewUser(body.username, body.password));
+    return this.usersService.createNewUser(body.username, body.password);
   }
 
   @Delete()
@@ -46,10 +46,10 @@ export class UsersController {
     fileFilter: validateOpmlFile,
   }))
   async uploadFile(@Req() req, @UploadedFile() file: FileUploaded) {
-    let user: User = req.user;
+    let user: UserDoc = req.user;
     // Create a new user if the request is anonym
     if (!user) {
-      user = this.usersService.getUserObject(await this.usersService.createNewAnonymUser());
+      user = await this.usersService.createNewAnonymUser();
     }
     const opmlSubs = await this.rssService.parseOpml(file.buffer);
     // Create all subscriptions objects present in the opml file
