@@ -23,7 +23,7 @@ import { UsersModule } from '../users.module';
         signOptions: { expiresIn: '3h' },
       })
     }),
-    MongooseModule.forFeature([{ name: 'Users', schema: UserSchema }])],
+  ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
   exports: [AuthService],

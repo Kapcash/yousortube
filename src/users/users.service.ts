@@ -7,25 +7,29 @@ import { UserDoc, User } from './users.interface';
 export class UsersService {
   
   constructor(
-    @InjectModel('Users') private userModel: Model<UserDoc>,
+    @InjectModel('Users') private userModel: Model<UserDoc>
   ){}
     
   findOne(username: string): Promise<User> {
     return this.userModel.findOne({ login: username }).exec()
-      .then(user => user.toObject())
-      .then(user => {
-        user._id = user._id.toString();
-        return user;
-      });
+      .then(user => this.getUserObject(user, false))
   }
 
   findOneById(userId: string): Promise<User> {
     return this.userModel.findOne({ _id: userId }).exec()
-      .then(user => user.toObject())
-      .then(user => {
-        user._id = userId;
-        return user;
-      });
+      .then(user => this.getUserObject(user, false))
+  }
+
+  /** Return the user object simplified, and without the password */
+  getUserObject(user: UserDoc, hidePassword = true): User {
+    const userObj = user.toObject();
+    const { password, ...rest } = userObj;
+    return hidePassword ? rest : userObj;
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    const user = await this.userModel.findOne({ _id: userId }).exec();
+    user.remove();
   }
 
   createNewAnonymUser(): Promise<UserDoc> {
@@ -40,6 +44,7 @@ export class UsersService {
       });
     } catch (err) {
       // TODO Handle username already exists
+      console.error(err);
     }
   }
 }

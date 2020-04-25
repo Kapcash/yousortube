@@ -13,8 +13,8 @@ export interface SubscriptionGroup {
 export interface SubscriptionGroupDoc extends SubscriptionGroup, Document {}
 
 export const SubscriptionGroupSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: 'User'},
-  title: { type: String, default: 'New group'},
+  userId: { type: Schema.Types.ObjectId, ref: 'User' },
+  title: { type: String, default: 'New group' },
   channels: [{
     type: Schema.Types.ObjectId,
     ref: 'Subscription'

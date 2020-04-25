@@ -1,4 +1,4 @@
-import { Schema, Document, Types } from "mongoose";
+import { Schema, Document } from "mongoose";
 
 export interface FileUploaded {
   buffer: Buffer;
@@ -12,19 +12,17 @@ export interface FileUploaded {
 export interface UserAttr {
   readonly login: string;
   readonly password?: string;
-  readonly subscriptions: Types.ObjectId[];
   readonly creationDate?: Date;
 }
 
 export interface User extends UserAttr {
-  _id: string;
+  id: string;
 }
 
 export interface UserDoc extends UserAttr, Document {}
 
-export const UserSchema = new Schema({
+export const UserSchema = new Schema<UserAttr>({
   login: { type: String, required: true },
-  password: { type: String, required: true },
+  password: { type: String, required: false },
   creationDate: { type: Date, default: Date.now },
-  subscriptions: { type: [Schema.Types.ObjectId], default: [] },
 });

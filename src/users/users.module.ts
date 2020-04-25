@@ -6,13 +6,26 @@ import { UserSchema } from './users.interface';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SubscriptionGroupsModule } from 'src/subscriptions-groups/subscriptionGroups.module';
 import { SubscriptionsModule } from 'src/subscriptions/subscriptions.module';
+import { SubscriptionGroupsService } from 'src/subscriptions-groups/subscriptionGroups.service';
 
 @Module({
   imports: [
+    MongooseModule.forFeatureAsync([{
+      name: 'Users',
+      imports: [SubscriptionGroupsModule],
+      inject: [SubscriptionGroupsService],
+      useFactory: (subscriptionGroupService: SubscriptionGroupsService) => {
+        const schema = UserSchema;
+        schema.pre('remove', function () {
+          subscriptionGroupService.deleteAllSubscriptionGroup(this.id);
+        });
+        return schema;
+      },
+    }]),
     RssModule,
     SubscriptionsModule,
     SubscriptionGroupsModule,
-    MongooseModule.forFeature([{ name: 'Users', schema: UserSchema }])],
+  ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

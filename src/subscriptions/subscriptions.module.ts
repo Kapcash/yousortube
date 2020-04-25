@@ -6,7 +6,10 @@ import { RssModule } from 'src/rss/rss.module';
 import { SubscriptionController } from './subscriptions.controller';
 
 @Module({
-  imports: [RssModule, MongooseModule.forFeature([{ name: 'Subscription', schema: SubscriptionSchema }])],
+  imports: [
+    RssModule,
+    MongooseModule.forFeature([{ name: 'Subscription', schema: SubscriptionSchema }]),
+  ],
   controllers: [SubscriptionController],
   providers: [SubscriptionService],
   exports: [SubscriptionService],

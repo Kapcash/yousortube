@@ -1,24 +1,24 @@
-import { Controller, Get, HttpCode, Post, Delete, Patch, Param, Body, HttpStatus, HttpException } from '@nestjs/common';
+import { Controller, Get, HttpCode, Post, Delete, Patch, Param, Body, HttpStatus, HttpException, UseGuards, Req } from '@nestjs/common';
 import { SubscriptionGroup, CreateSubGroupDto, VideoDto } from './subscriptionGroups.interface';
 import { SubscriptionGroupsService } from './subscriptionGroups.service';
+import { JwtAuthGuard } from 'src/users/auth/guards/jwt-auth.guard';
 
 @Controller('subscription-groups')
+@UseGuards(JwtAuthGuard)
 export class SubscriptionGroupController {
 
   constructor(
     private readonly subscriptionGroupService: SubscriptionGroupsService,
-  ) {
-    
-  }
+  ) {}
 
   @Get()
-  async getSubscriptionGroups(): Promise<SubscriptionGroup[]> {
-    return this.subscriptionGroupService.findAll();
+  async getSubscriptionGroups(@Req() req): Promise<SubscriptionGroup[]> {
+    return this.subscriptionGroupService.findAll(req.user._id);
   }
 
   @Get(':id')
-  async getSubscriptionGroup(@Param('id') groupId: string): Promise<SubscriptionGroup> {
-    return this.subscriptionGroupService.findOne(groupId);
+  async getSubscriptionGroup(@Req() req, @Param('id') groupId: string): Promise<SubscriptionGroup> {
+    return this.subscriptionGroupService.findOne(req.user._id, groupId);
   }
 
   /**
@@ -27,9 +27,8 @@ export class SubscriptionGroupController {
    * @param channelIds The channels ids to include in the group
    */
   @Post()
-  createSubscriptionGroup(@Body() dto: CreateSubGroupDto): Promise<SubscriptionGroup> {
-    const userId = '1';
-    return this.subscriptionGroupService.createSubscriptionGroup(userId, dto.groupTitle, dto.channelIds);
+  createSubscriptionGroup(@Req() req, @Body() dto: CreateSubGroupDto): Promise<SubscriptionGroup> {
+    return this.subscriptionGroupService.createSubscriptionGroup(req.user._id, dto.groupTitle, dto.channelIds);
   }
 
   /**
@@ -37,9 +36,9 @@ export class SubscriptionGroupController {
    * @param groupId The subscription group id to remove
    */
   @Delete(':id')
-  async removeSubscriptionGroup(@Param('id') groupId: string): Promise<void> {
+  async removeSubscriptionGroup(@Req() req, @Param('id') groupId: string): Promise<void> {
     try {
-      await this.subscriptionGroupService.deleteSubscriptionGroup(groupId);
+      await this.subscriptionGroupService.deleteSubscriptionGroup(req.user._id, groupId);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -54,7 +53,7 @@ export class SubscriptionGroupController {
 
   @Get('/:id/videos')
   @HttpCode(501)
-  async getVideos(@Param('id') groupId: string): Promise<VideoDto[]> {
-    return this.subscriptionGroupService.getGroupVideos(groupId);
+  async getVideos(@Req() req, @Param('id') groupId: string): Promise<VideoDto[]> {
+    return this.subscriptionGroupService.getGroupVideos(req.user._id, groupId);
   }
 }

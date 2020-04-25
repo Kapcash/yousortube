@@ -7,7 +7,11 @@ import { SubscriptionsModule } from 'src/subscriptions/subscriptions.module';
 import { YoutubeApiModule } from 'src/youtube-api/youtupeApi.module';
 
 @Module({
-  imports: [SubscriptionsModule, YoutubeApiModule, MongooseModule.forFeature([{ name: 'SubscriptionGroup', schema: SubscriptionGroupSchema }])],
+  imports: [
+    SubscriptionsModule,
+    YoutubeApiModule,
+    MongooseModule.forFeature([{ name: 'SubscriptionGroup', schema: SubscriptionGroupSchema }])
+  ],
   controllers: [SubscriptionGroupController],
   providers: [SubscriptionGroupsService],
   exports: [SubscriptionGroupsService],

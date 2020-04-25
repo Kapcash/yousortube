@@ -17,15 +17,15 @@ export class SubscriptionGroupsService {
     private readonly youtubeApiService: YoutubeApiService,
   ) {}
 
-  findAll(): Promise<SubscriptionGroup[]> {
-    return this.subscriptionGroupModel.find().exec();
+  findAll(userId: string): Promise<SubscriptionGroupDoc[]> {
+    return this.subscriptionGroupModel.find({ userId }).populate('channels').exec();
   }
 
-  findOne(groupId: string): Promise<SubscriptionGroup> {
-    return this.subscriptionGroupModel.findOne({ _id: groupId }).populate('channels').exec();
+  findOne(userId: string, groupId: string): Promise<SubscriptionGroupDoc> {
+    return this.subscriptionGroupModel.findOne({ userId, _id: groupId }).populate('channels').exec();
   }
 
-  createSubscriptionGroup(userId: string, title: string, channelIds: string[]): Promise<SubscriptionGroup> {
+  createSubscriptionGroup(userId: string, title: string, channelIds: string[]): Promise<SubscriptionGroupDoc> {
     const sub: SubscriptionGroup = {
       userId: Types.ObjectId(userId),
       title,
@@ -35,19 +35,23 @@ export class SubscriptionGroupsService {
     return createdSubGrp.save();
   }
 
-  async deleteSubscriptionGroup(groupId: string): Promise<void> {
-    const deletion: Deletion = await this.subscriptionGroupModel.deleteOne({ _id: groupId }).exec();
+  async deleteSubscriptionGroup(userId: string, groupId: string): Promise<void> {
+    const deletion: Deletion = await this.subscriptionGroupModel.deleteOne({ userId, _id: groupId }).exec();
     if (deletion.deletedCount !== 1) {
       throw new Error('Group id has not been deleted correctly');
     }
+  }
+
+  deleteAllSubscriptionGroup(userId: string): Promise<any> {
+    return this.subscriptionGroupModel.deleteMany({ userId }).exec();
   }
 
   editSubscriptionGroup(groupId: string, jsonpatchDto: any): Promise<any> { 
     return null;
   }
 
-  async getGroupVideos(groupId: string): Promise<VideoDto[]> {
-    const subGroup = await this.findOne(groupId);
+  async getGroupVideos(userId: string, groupId: string): Promise<VideoDto[]> {
+    const subGroup = await this.findOne(userId, groupId);
     const rssVideos = await this.subscriptionService.getSubsVideos(subGroup.channels as Subscription[])
     const videoInfos = await this.youtubeApiService.getVideosInfo(rssVideos.map(video => video.id));
     return videoInfos.map(vid => this.youtubeApiService.fromFullVideoToDto(vid));
