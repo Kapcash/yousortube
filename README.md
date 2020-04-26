@@ -1,75 +1,93 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Yousortube
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Behind this brilliant and long-sought searched name is a pretty simple web app to provide a single feature: **group your Youtube subscriptions into custom categories.**
 
-## Description
+No need to connect to your Google account in this app, everydata we use is already public!
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+But an account is necessary if you want to save your setup and share it across multiple platforms. (The registration is really fast, don't worry).
 
-## Installation
+# Api
 
-```bash
-$ npm install
-```
+This Api part is build with [NestJS](https://nestjs.com/) because I like this framework. It's powerful.
 
-## Running the app
+You'll be able to separate the Youtube channels your are subscribed to into different tabs. This way, you can keep your subscriptions flow clear!
 
-```bash
-# development
-$ npm run start
+# Available endpoints:
 
-# watch mode
-$ npm run start:dev
+// TODO List them all.
 
-# production mode
-$ npm run start:prod
-```
+## Authentication flow
 
-## Test
+We use a simple OAuth authentication flow, using jwt tokens.
 
-```bash
-# unit tests
-$ npm run test
+### Registration
 
-# e2e tests
-$ npm run test:e2e
+First, you'll need to sign up. We only need a login and a password.
 
-# test coverage
-$ npm run test:cov
-```
+> POST /users
+> body: { "username": "mooncake", "password": "chewkiti" }
 
-## Support
+*(Don't use that password, it's so unsecured)*
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+We'll return your brand new user with its `id`. But you're **not authenticated**.
 
-## Stay in touch
+### Login
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Then, you can log in:
 
-## License
+> POST /auth/login { "username": "mooncake", "password": "chewkiti" }
 
-  Nest is [MIT licensed](LICENSE).
+You'll get a jwt token. You must provide it for every requests requiring authentication in a HTTP header: `Authorization: Bearer <my-jwt-token>`
+
+### My jwt token expired
+
+First solution: **login again**.
+
+or
+
+Second solution: **use refresh token**.  
+When you log in, we set an Http only cookie with a usable refresh token.
+
+Just call this endpoint to get a fresh new jwt token (with the cookie, obviously):
+
+> GET /auth/refresh-token
+
+You'll get a new jwt token *or* a 403 error, meaning that the refresh token expired. In that case, you have to login again.
+
+## Subscriptions management
+
+### Indicate your subscriptions
+
+In order to make the app work, it has to know what are your current subscriptions.
+
+We use the youtube OPML file (that describe RSS flux) to get this information.
+
+> You can find your own opml file at the bottom of the page `https://www.youtube.com/subscription_manager`.
+
+To upload your OPML file, use this endpoint:
+
+> POST /users/opml
+> body: { file: \<encoded_binary_file> }
+
+You'll get a response showing your first subscription group! It includes all the subscriptions you currently have.
+
+### Get all subscriptions
+
+// TODO
+
+### Create a new group
+
+To create a new subscription group, just call:
+
+> POST /subscription-groups
+> body: { "groupTitle": "\<group_name>", "channelIds": ["channel_id_1", "channel_id_2"] }
+
+And boom! Your group is created!
+
+### Get videos from a group
+
+To get the last videos of the subscription group, just like the global youtube subscription page, call:
+
+> GET /subscription-groups/:id/videos
+
+And we'll respond with the informations of the last videos included in that group, including the thumbnails.
