@@ -1,6 +1,13 @@
 # Yousortube
 
-Behind this brilliant and long-sought searched name is a pretty simple web app to provide a single feature: **group your Youtube subscriptions into custom categories.**
+Behind this brilliant and long-sought name is a pretty simple web app to provide a single feature: **group your Youtube subscriptions into custom categories.**
+
+Image if you could have those nice tabs on the Youtube page:
+![yousortube preview image](./assets/yousortube-preview.jpg)
+
+This is what I'm aiming to do with my app :)
+
+---------
 
 No need to connect to your Google account in this app, everydata we use is already public!
 
