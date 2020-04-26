@@ -1,7 +1,8 @@
-import { Injectable, BadRequestException, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDoc } from './users.interface';
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -32,10 +33,11 @@ export class UsersService {
   }
 
   async createNewUser(username: string, password: string): Promise<UserDoc> {
+    const passwordHash = await hash(password, 12)
     try {
       const createdUser = await this.userModel.create({
         login: username,
-        password
+        password: passwordHash,
       });
       return this.findOneById(createdUser.id);
     } catch (err) {

@@ -5,8 +5,11 @@ import { UserDoc } from 'src/users/users.interface';
 import { UsersService } from 'src/users/users.service';
 import { ConfigService } from '@nestjs/config';
 
+export const REFRESH_TOKEN_STRATEGY = 'refresh-jwt';
+
+// TODO Find a way to extends JwtStrategy and change ignoreExpiration value only
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class RefreshJwtStrategy extends PassportStrategy(Strategy, REFRESH_TOKEN_STRATEGY) {
   
   constructor(
     private readonly configService: ConfigService,
@@ -14,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
+      ignoreExpiration: true,
       secretOrKey: configService.get<string>('JWT_SECRET'),
     });
   }

@@ -1,4 +1,4 @@
-import { Controller, Post, UseInterceptors, UploadedFile, Request, UseGuards, Get, Body, Req, Param, Delete } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile, UseGuards, Get, Body, Req, Delete, Res, HttpStatus } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RssService } from 'src/rss/rss.service';
 import { FileUploaded, UserDoc } from './users.interface';
@@ -7,7 +7,8 @@ import { SubscriptionService } from 'src/subscriptions/subscription.service';
 import { SubscriptionGroupsService } from 'src/subscriptions-groups/subscriptionGroups.service';
 import { SubscriptionDoc } from 'src/subscriptions/subscription.interface';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { hash } from 'bcrypt';
+
+// BIG TODO: Create DTO classes all over the app
 
 /** Validator function for opml upload file */
 const validateOpmlFile = (req, file, cb) => {
@@ -27,20 +28,19 @@ export class UsersController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  getProfile(@Request() req) {
+  getProfile(@Req() req) {
     return req.user;
   }
 
   @Post()
   async createAccount(@Body() body) {
-    const passwordHash = await hash(body.password, 12)
-    return this.usersService.createNewUser(body.username, passwordHash);
+    return this.usersService.createNewUser(body.username, body.password);
   }
 
   @Delete()
   @UseGuards(JwtAuthGuard)
   deleteAccount(@Req() req) {
-    return this.usersService.deleteUser(req.user._id);
+    return this.usersService.deleteUser(req.user.id);
   }
 
   @Post('opml')
