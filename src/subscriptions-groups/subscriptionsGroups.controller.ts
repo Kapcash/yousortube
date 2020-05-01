@@ -1,5 +1,5 @@
-import { Controller, Get, HttpCode, Post, Delete, Patch, Param, Body, HttpStatus, HttpException, UseGuards, Req } from '@nestjs/common';
-import { SubscriptionGroup, CreateSubGroupDto, VideoDto } from './subscriptionGroups.interface';
+import { Controller, Get, Post, Delete, Patch, Param, Body, HttpStatus, HttpException, UseGuards, Req, applyDecorators } from '@nestjs/common';
+import { SubscriptionGroup, CreateSubGroupDto, VideoDto, PatchOperation } from './subscriptionGroups.interface';
 import { SubscriptionGroupsService } from './subscriptionGroups.service';
 import { JwtAuthGuard } from 'src/users/auth/guards/jwt-auth.guard';
 
@@ -45,14 +45,11 @@ export class SubscriptionGroupController {
   }
 
   @Patch(':id')
-  @HttpCode(501)
-  async addChannelToSubscriptionGroup(@Param('id') groupId: string, channelIds: string[]): Promise<SubscriptionGroup> {
-    // Use JSON Patch (http://jsonpatch.com/) format
-    return null;
+  editChannelInSubscriptionGroup(@Req() req, @Param('id') groupId: string, @Body() patchs: PatchOperation): Promise<SubscriptionGroup> {
+    return this.subscriptionGroupService.editSubscriptionGroup(req.user.id, groupId, patchs);
   }
 
   @Get('/:id/videos')
-  @HttpCode(501)
   async getVideos(@Req() req, @Param('id') groupId: string): Promise<VideoDto[]> {
     return this.subscriptionGroupService.getGroupVideos(req.user._id, groupId);
   }

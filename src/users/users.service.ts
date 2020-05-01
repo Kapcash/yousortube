@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDoc } from './users.interface';
 import { hash } from 'bcrypt';
+import { Subscription } from 'src/subscriptions/subscription.interface';
 
 @Injectable()
 export class UsersService {
@@ -11,16 +12,17 @@ export class UsersService {
     @InjectModel('Users') private userModel: Model<UserDoc>
   ){}
     
-  findOne(username: string, withPassword = false): Promise<UserDoc> {
-    let query = this.userModel.findOne({ login: username })
-    if (!withPassword) {
-      query = query.select('-password');
-    }
-    return query.exec();
+  findOne(username: string): Promise<UserDoc> {
+    return this.userModel.findOne({ login: username }).exec();
   }
 
   findOneById(userId: string): Promise<UserDoc> {
-    return this.userModel.findOne({ _id: userId }).select('-password').exec()
+    return this.userModel.findOne({ _id: userId }).exec()
+  }
+
+  async getSubscriptions(userId: string): Promise<Subscription[]> {
+    const user = await this.userModel.findOne({ _id: userId }).populate('subscriptions').exec()
+    return user.subscriptions;
   }
 
   async deleteUser(userId: string): Promise<void> {

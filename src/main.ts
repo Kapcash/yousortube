@@ -8,3 +8,9 @@ async function bootstrap() {
   await app.listen(3000);
 }
 bootstrap();
+
+Array.prototype.uniq = function uniq() {
+  return this.sort().filter(function(item, pos, ary) {
+      return !pos || item != ary[pos - 1];
+  })
+}

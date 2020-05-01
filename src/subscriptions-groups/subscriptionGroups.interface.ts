@@ -39,3 +39,13 @@ export interface VideoDto {
   author: string;
   thumbnailUrl: string;
 }
+
+export enum Operation {
+  Add = 'add',
+  Remove = 'remove'
+}
+
+/** Patch Dto to add or remove channel ids to a sub group */
+export type PatchOperation = {
+  [key in Operation]: string[];
+};

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { SubscriptionGroup, SubscriptionGroupDoc, VideoDto } from './subscriptionGroups.interface';
+import { SubscriptionGroup, SubscriptionGroupDoc, VideoDto, PatchOperation } from './subscriptionGroups.interface';
 import { SubscriptionService } from 'src/subscriptions/subscription.service';
 import { Subscription } from 'src/subscriptions/subscription.interface';
 import { YoutubeApiService } from 'src/youtube-api/youtubeApi.service';
@@ -46,8 +46,16 @@ export class SubscriptionGroupsService {
     return this.subscriptionGroupModel.deleteMany({ userId }).exec();
   }
 
-  editSubscriptionGroup(groupId: string, jsonpatchDto: any): Promise<any> { 
-    return null;
+  async editSubscriptionGroup(userId: string, groupId: string, patchs: PatchOperation): Promise<any> { 
+    const getGroupQuery = { userId, _id: groupId };
+    const channelsToAdd = patchs.add.map(id => Types.ObjectId(id));
+    const channelsToRemove = patchs.remove.map(id => Types.ObjectId(id));
+    if (channelsToAdd.length > 0) {
+      this.subscriptionGroupModel.update(getGroupQuery, { $addToSet: { channels: { $each: channelsToAdd } } }).exec();
+    }
+    if (channelsToRemove.length > 0) {
+      this.subscriptionGroupModel.update(getGroupQuery, { $pullAll: { channels:  channelsToRemove } }).exec();
+    }
   }
 
   async getGroupVideos(userId: string, groupId: string): Promise<VideoDto[]> {

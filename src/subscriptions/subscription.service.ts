@@ -32,10 +32,6 @@ export class SubscriptionService {
     return this.subscriptionModel.findOne({ _id: id }).exec();
   }
 
-  async findAll(): Promise<SubscriptionDoc[]> {
-    return this.subscriptionModel.find().exec();
-  }
-
   /**
    * Get a channel videos from RSS feed
    * @param sub The subscribed channel from which get the videos
