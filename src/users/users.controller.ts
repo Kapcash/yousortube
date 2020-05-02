@@ -1,16 +1,16 @@
-import { Controller, Post, UseInterceptors, UploadedFile, UseGuards, Get, Body, Req, Delete, ClassSerializerInterceptor } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile, UseGuards, Get, Body, Req, Delete, ClassSerializerInterceptor, Put } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RssService } from 'src/rss/rss.service';
 import { FileUploaded, UserDoc } from './users.interface';
 import { UsersService } from './users.service';
 import { SubscriptionService } from 'src/subscriptions/subscription.service';
 import { SubscriptionGroupsService } from 'src/subscriptions-groups/subscriptionGroups.service';
-import { SubscriptionDoc, Subscription } from 'src/subscriptions/subscription.interface';
+import { SubscriptionDoc } from 'src/subscriptions/subscription.interface';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UserDto } from 'src/dto/user.dto';
 import { Request } from 'express';
-import { serialize } from 'class-transformer';
 import { SubsResponse } from 'src/dto/subscription.dto';
+import { AuthService } from './auth/auth.service';
 
 // BIG TODO: Create DTO classes all over the app
 
@@ -26,6 +26,7 @@ export class UsersController {
   constructor(
     private readonly rssService: RssService,
     private readonly usersService: UsersService,
+    private readonly authService: AuthService,
     private readonly subscriptionService: SubscriptionService,
     private readonly subscriptionGroupsService: SubscriptionGroupsService,
   ) {}
@@ -45,9 +46,20 @@ export class UsersController {
   }
 
   @Post()
+  @UseInterceptors(ClassSerializerInterceptor)
   async createAccount(@Body() body) {
     if (body.password.length < 8) { throw new Error('Password must be at least 8 characters'); }
-    return this.usersService.createNewUser(body.username, body.password);
+    const user = await this.usersService.createNewUser(body.username, body.password);
+    return new UserDto(user.toObject());
+  }
+
+  @Put()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async updateLogin(@Req() req, @Body() body) {
+    if (body.password.length < 8) { throw new Error('Password must be at least 8 characters'); }
+    const user = await this.usersService.updateLogin(req.user, body.username, body.password)
+    return new UserDto(user.toObject());
   }
 
   @Delete()
@@ -56,15 +68,29 @@ export class UsersController {
     return this.usersService.deleteUser(req.user.id);
   }
 
+  @Post('opml/anonym')
+  @UseInterceptors(FileInterceptor('file', { fileFilter: validateOpmlFile }))
+  async uploadFileAnonymous(@UploadedFile() file: FileUploaded) {
+    // Create a new user if the request is anonym
+    const user = await this.usersService.createNewAnonymUser();
+    const opmlSubs = await this.rssService.parseOpml(file.buffer);
+    // Create all subscriptions objects present in the opml file
+    const subs: Promise<SubscriptionDoc>[] = [];
+    opmlSubs.forEach(sub => {
+      subs.push(this.subscriptionService.createSubscription(sub));
+    });
+    const subscriptions = await Promise.all(subs);
+    user.update({ subscriptions });
+    // Create default group with all subscriptions
+    this.subscriptionGroupsService.createSubscriptionGroup(user.id, 'All channels', subscriptions.map(sub => sub.id))
+    return { accessToken: await this.authService.getJwtToken(user) };
+  }
+
   @Post('opml')
   @UseInterceptors(FileInterceptor('file', { fileFilter: validateOpmlFile }))
   @UseGuards(JwtAuthGuard)
   async uploadFile(@Req() req, @UploadedFile() file: FileUploaded) {
     const user: UserDoc = req.user;
-    // Create a new user if the request is anonym
-    // if (!user) {
-    //   user = await this.usersService.createNewAnonymUser();
-    // }
     const opmlSubs = await this.rssService.parseOpml(file.buffer);
     // Create all subscriptions objects present in the opml file
     const subs: Promise<SubscriptionDoc>[] = [];

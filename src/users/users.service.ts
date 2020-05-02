@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { UserDoc } from './users.interface';
 import { hash } from 'bcrypt';
 import { Subscription } from 'src/subscriptions/subscription.interface';
@@ -17,7 +17,7 @@ export class UsersService {
   }
 
   findOneById(userId: string): Promise<UserDoc> {
-    return this.userModel.findOne({ _id: userId }).exec()
+    return this.userModel.findOne({ _id: Types.ObjectId(userId) }).exec()
   }
 
   async getSubscriptions(userId: string): Promise<Subscription[]> {
@@ -31,17 +31,23 @@ export class UsersService {
   }
 
   createNewAnonymUser(): Promise<UserDoc> {
-    return this.userModel.create({});
+    const temporaryLogin = `anonym-${Math.floor(Math.random() * 100000) }`;
+    return this.userModel.create({ login: temporaryLogin });
+  }
+
+  async updateLogin(user: UserDoc, username: string, password: string): Promise<UserDoc> {
+    const passwordHash = await hash(password, 12)
+    await user.update({ login: username, password: passwordHash }).exec();
+    return this.findOneById(user.id);
   }
 
   async createNewUser(username: string, password: string): Promise<UserDoc> {
     const passwordHash = await hash(password, 12)
     try {
-      const createdUser = await this.userModel.create({
+      return this.userModel.create({
         login: username,
         password: passwordHash,
       });
-      return this.findOneById(createdUser.id);
     } catch (err) {
       if (err.code === 11000) { // Duplicate login
         throw new BadRequestException('This login is already taken.');

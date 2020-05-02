@@ -21,7 +21,7 @@ export interface UserDoc extends UserAttr, Document {}
 
 export const UserSchema = new Schema<UserAttr>({
   login: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: false },
   creationDate: { type: Date, default: Date.now },
   subscriptions: [{
     type: Schema.Types.ObjectId,

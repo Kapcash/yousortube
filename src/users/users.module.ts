@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { RssModule } from 'src/rss/rss.module';
@@ -7,9 +7,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { SubscriptionGroupsModule } from 'src/subscriptions-groups/subscriptionGroups.module';
 import { SubscriptionsModule } from 'src/subscriptions/subscriptions.module';
 import { SubscriptionGroupsService } from 'src/subscriptions-groups/subscriptionGroups.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    forwardRef(() => AuthModule),
     MongooseModule.forFeatureAsync([{
       name: 'Users',
       imports: [SubscriptionGroupsModule],

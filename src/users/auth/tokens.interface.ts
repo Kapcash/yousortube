@@ -18,3 +18,7 @@ export const RefreshTokenSchema = new Schema<RefreshToken>({
   userId: { type: Types.ObjectId, required: true, unique: true },
   expiration: { type: Date, required: true },
 });
+
+export interface JwtDto {
+  accessToken: string;
+}
