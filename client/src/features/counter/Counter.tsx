@@ -7,7 +7,7 @@ import {
   incrementAsync,
   selectCount,
 } from './counterSlice';
-import styles from './Counter.module.css';
+import styles from './Counter.module.scss';
 
 export function Counter() {
   const count = useSelector(selectCount);
@@ -15,7 +15,7 @@ export function Counter() {
   const [incrementAmount, setIncrementAmount] = useState('2');
 
   return (
-    <div>
+    <div className={styles.page}>
       <div className={styles.row}>
         <button
           className={styles.button}

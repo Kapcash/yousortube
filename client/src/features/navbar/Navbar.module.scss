@@ -1,0 +1,25 @@
+.navbar {
+  position: fixed;
+  z-index: 200;
+  top: 0;
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 40px;
+  width: 100%;
+  img {
+    width: 30px;
+  }
+}
+
+.button {
+  font-size: 16px;
+  padding: 4px 12px;
+  outline: none;
+  border: 2px solid grey;
+  color: #333333;
+  cursor: pointer;
+  background-color: rgba(112, 76, 182, 0.1);
+}
