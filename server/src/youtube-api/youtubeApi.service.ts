@@ -1,7 +1,7 @@
 import { Injectable, HttpService } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ResponseApi, VideoResponse } from './youtube.v3';
-import { VideoDto } from 'src/subscriptions-groups/subscriptionGroups.interface';
+import { VideoDto } from 'src/dto/videos';
 
 @Injectable()
 export class YoutubeApiService {

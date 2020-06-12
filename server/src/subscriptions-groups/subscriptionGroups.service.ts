@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { SubscriptionGroup, SubscriptionGroupDoc, VideoDto, PatchOperation } from './subscriptionGroups.interface';
+import { SubscriptionGroup, SubscriptionGroupDoc, PatchOperation } from './subscriptionGroups.interface';
 import { SubscriptionService } from 'src/subscriptions/subscription.service';
 import { Subscription } from 'src/subscriptions/subscription.interface';
 import { YoutubeApiService } from 'src/youtube-api/youtubeApi.service';
+import { VideoDto } from 'src/dto/videos';
 
 type Deletion = { ok?: number; n?: number; } & { deletedCount?: number };
 

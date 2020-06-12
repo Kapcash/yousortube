@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Delete, Patch, Param, Body, HttpStatus, HttpException, UseGuards, Req, applyDecorators } from '@nestjs/common';
-import { SubscriptionGroup, CreateSubGroupDto, VideoDto, PatchOperation } from './subscriptionGroups.interface';
+import { SubscriptionGroup, CreateSubGroupDto, PatchOperation } from './subscriptionGroups.interface';
 import { SubscriptionGroupsService } from './subscriptionGroups.service';
 import { JwtAuthGuard } from 'src/users/auth/guards/jwt-auth.guard';
+import { VideoDto } from 'src/dto/videos';
 
 @Controller('subscription-groups')
 @UseGuards(JwtAuthGuard)

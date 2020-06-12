@@ -29,17 +29,6 @@ export interface CreateSubGroupDto {
   channelIds?: string[]
 }
 
-// === Video === //
-
-export interface VideoDto {
-  id: string;
-  pubDate: Date;
-  title: string;
-  link: string;
-  author: string;
-  thumbnailUrl: string;
-}
-
 export enum Operation {
   Add = 'add',
   Remove = 'remove'
