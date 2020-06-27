@@ -2,14 +2,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from './store';
 import axios from 'axios';
 
-interface SubscriptionGroup {
+export interface SubscriptionGroup {
   name: string;
   id: number;
 }
 
 export interface Video {
   id: string;
-  pubDate: Date;
+  pubDate: string; // Date
   title: string;
   link: string;
   author: string;
@@ -44,13 +44,16 @@ export const groupSlice = createSlice({
     changeGroup: (state: GroupState, action: PayloadAction<SubscriptionGroup>) => {
       state.selected = action.payload;
     },
+    addGroup: (state: GroupState, action: PayloadAction<SubscriptionGroup>) => {
+      state.groups.push(action.payload);
+    },
     setVideos: (state: GroupState, action: PayloadAction<Video[]>) => {
       state.videos = action.payload;
     }
   },
 });
 
-export const { changeGroup, setVideos } = groupSlice.actions;
+export const { changeGroup, setVideos, addGroup } = groupSlice.actions;
 
 // TODO: to remove
 const mockVideos = (howMany: number = 10, groupName: any) => {
@@ -58,7 +61,7 @@ const mockVideos = (howMany: number = 10, groupName: any) => {
   for(let i = 0; i < howMany ; i++) {
     videos.push({
       id: i.toString(),
-      pubDate: new Date(),
+      pubDate: new Date().toString(),
       title: `Video #${i} from group #${groupName}`,
       link: 'https://google.com',
       author: 'I am the author',
@@ -72,7 +75,7 @@ export const fetchVideos = (groupId: number): AppThunk => async dispatch => {
   // const response = await axios.get(`/groups/${groupId}/videos`);
   const response = await new Promise<{ data: Video[]}>((resolve) => {
     resolve({
-      data: mockVideos(15, groupId),
+      data: mockVideos(55, groupId),
     })
   })
   dispatch(setVideos(response.data));
@@ -81,6 +84,16 @@ export const fetchVideos = (groupId: number): AppThunk => async dispatch => {
 export const selectGroup = (group: SubscriptionGroup): AppThunk => dispatch => {
   dispatch(changeGroup(group));
   dispatch(fetchVideos(group.id));
+};
+
+export const createGroup = (name: string): AppThunk => dispatch => {
+  // TODO: API call
+  const newGroup: SubscriptionGroup = {
+    id: Math.floor(Math.random() * 100),
+    name,
+  }
+  dispatch(addGroup(newGroup));
+  dispatch(selectGroup(newGroup));
 };
 
 // Selectors

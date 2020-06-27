@@ -13,9 +13,9 @@ export function Navbar() {
   const dispatch = useDispatch();
 
   return (
-    <div className={styles.navbar}>
+    <nav className={styles.navbar}>
       <img src="/logo192.png" alt="yousortube logo"/>
       <h3>YOUSORTUBE</h3>
-    </div>
+    </nav>
   );
 }
