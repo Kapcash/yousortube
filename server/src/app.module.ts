@@ -1,4 +1,4 @@
-import { Module, HttpModule, HttpService } from '@nestjs/common';
+import { Module, HttpModule, HttpService, MiddlewareConsumer } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
@@ -9,6 +9,7 @@ import { YoutubeApiModule } from './youtube-api/youtupeApi.module';
 import { AxiosRequestConfig } from 'axios';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './users/auth/auth.module';
+import { LoggerMiddleware } from './middlewares/logger.middleware';
 
 @Module({
   imports: [
@@ -27,11 +28,18 @@ import { AuthModule } from './users/auth/auth.module';
 })
 export class AppModule {
   constructor(private httpService: HttpService) {}
+
   onModuleInit() {
     this.httpService.axiosRef.interceptors.request.use((config: AxiosRequestConfig) => {
       console.debug(`${config.method.toUpperCase()} ${config.url}
       body: ${JSON.stringify(config.params)}`);
       return config;
     });
+  }
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('/');
   }
 }
