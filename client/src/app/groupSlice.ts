@@ -87,7 +87,7 @@ export const selectGroup = (group: SubscriptionGroup): AppThunk => dispatch => {
 };
 
 export const createGroup = (name: string): AppThunk => dispatch => {
-  // TODO: API call
+  // const response = await axios.post(`/groups`);
   const newGroup: SubscriptionGroup = {
     id: Math.floor(Math.random() * 100),
     name,

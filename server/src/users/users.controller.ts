@@ -1,4 +1,4 @@
-import { Controller, Post, UseInterceptors, UploadedFile, UseGuards, Get, Body, Req, Delete, ClassSerializerInterceptor, Put } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile, UseGuards, Get, Body, Req, Delete, ClassSerializerInterceptor, Put, Res } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RssService } from 'src/rss/rss.service';
 import { FileUploaded, UserDoc } from './users.interface';
@@ -8,7 +8,7 @@ import { SubscriptionGroupsService } from 'src/subscriptions-groups/subscription
 import { SubscriptionDoc } from 'src/subscriptions/subscription.interface';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UserDto } from 'src/dto/user.dto';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { SubsResponse } from 'src/dto/subscription.dto';
 import { AuthService } from './auth/auth.service';
 
@@ -34,7 +34,7 @@ export class UsersController {
   @Get('me')
   @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard)
-  getProfile(@Req() req: Request): UserDto {
+  getProfile(@Req() req: Request, @Res() res: Response): UserDto {
     return new UserDto(req.user.toObject());
   }
 

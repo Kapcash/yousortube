@@ -2,10 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { UsersService } from "../users.service";
 import { JwtService } from '@nestjs/jwt';
 import { UserDoc } from "../users.interface";
-import { JwtPayload, RefreshTokenDoc } from "./tokens.interface";
+import { JwtPayload } from "./tokens.interface";
 import { compare } from 'bcrypt';
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
 
 @Injectable()
 export class AuthService {
@@ -13,7 +11,6 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    @InjectModel('Tokens') private tokensModel: Model<RefreshTokenDoc>,
   ) {}
 
   async validateUser(username: string, pass: string): Promise<UserDoc | null> {
